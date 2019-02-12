@@ -1,0 +1,26 @@
+{
+  "name": "airbender",
+  "version": "1.0.0",
+  "description": "Suite of Airtable triggers for Hack Club's internal databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hackclub/airbender.git"
+  },
+  "author": "Hack Club HQ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hackclub/airbender/issues"
+  },
+  "homepage": "https://github.com/hackclub/airbender#readme",
+  "dependencies": {
+    "airtable": "^0.5.8",
+    "babel-register": "^6.26.0",
+    "dotenv": "^6.2.0",
+    "md5": "^2.2.1",
+    "node-fetch": "^2.3.0"
+  }
+}
