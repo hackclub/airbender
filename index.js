@@ -1,2 +1,2 @@
 require('babel-register');
-require('./airtable.js');
+require('./main.js');
