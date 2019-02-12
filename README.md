@@ -27,6 +27,12 @@ And then run (only works in root of repo)!
 
     $ ./bin/airbender
 
+## Deployment
+
+Our app is currently deployed on Heroku under `airbender-hackclub`.
+
+CI has not been set up yet for autodeployment from master. I (Zach) am curretly manually deploying from my machine.
+
 ## License
 
 **The MIT License (MIT)**
