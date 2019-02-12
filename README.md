@@ -19,6 +19,10 @@ AIRTABLE_BASE=REPLACEME
 SHIPPO_KEY=REPLACEME
 ```
 
+Install dependencies:
+
+    $ npm install
+
 And then run (only works in root of repo)!
 
     $ ./bin/airbender
