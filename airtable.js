@@ -4,12 +4,9 @@ const Airtable = require('airtable')
 const Shippo = require('./shippo.js')
 const md5 = require('md5')
 
-const AIRTABLE_KEY = process.env.AIRTABLE_KEY
-const AIRTABLE_BASE = process.env.AIRTABLE_BASE
+const { AIRTABLE_KEY, AIRTABLE_BASE, SHIPPO_KEY } = process.env
 
-const SHIPPO_KEY = process.env.SHIPPO_KEY
-
-const base = new Airtable({apiKey: AIRTABLE_KEY}).base(AIRTABLE_BASE)
+const base = new Airtable({ apiKey: AIRTABLE_KEY }).base(AIRTABLE_BASE)
 const shippo = new Shippo(SHIPPO_KEY)
 
 function forEachInTable(tableName, cb) {
@@ -28,44 +25,54 @@ forEachInTable('Shippo Orders', order => {
   if (order.get('Create Order') && !order.get('Shippo Order ID')) {
     const shipmentId = order.get('Shipment')[0]
 
-    base('Shipments').find(shipmentId)
+    base('Shipments')
+      .find(shipmentId)
       .then(shipment => {
         const recipientId = shipment.get('Recipient')[0]
         const senderId = shipment.get('Sender')[0]
 
-        return base('Recipients').find(recipientId).then(recipient => {
-          return base('Senders').find(senderId).then(sender => {
-            return shippo.createOrder(
-              recipient.get('Shippo Address ID'),
-              sender.get('Shippo Address ID')
-            )
-              .then(sOrder => {
-                return order.patchUpdate({
-                  'Shippo Order ID': sOrder.object_id
-                })
-              })
-              .then(() => {
-                console.log('Success creating order for', shipment.id)
+        return base('Recipients')
+          .find(recipientId)
+          .then(recipient => {
+            return base('Senders')
+              .find(senderId)
+              .then(sender => {
+                return shippo
+                  .createOrder(
+                    recipient.get('Shippo Address ID'),
+                    sender.get('Shippo Address ID')
+                  )
+                  .then(sOrder => {
+                    return order.patchUpdate({
+                      'Shippo Order ID': sOrder.object_id
+                    })
+                  })
+                  .then(() => {
+                    console.log('Success creating order for', shipment.id)
+                  })
               })
           })
-        })
       })
   }
 
   if (order.get('Shippo Order ID') && !order.get('Shipping Label')) {
-    shippo.getOrder(order.get('Shippo Order ID')).then(sOrder => {
-      if (sOrder.order_status == 'SHIPPED') {
-        order.patchUpdate({
-          'Shipping Label': [
-            {
-              url: sOrder.transactions[0].label_url
-            }
-          ],
-          'Shipping Label URL': sOrder.transactions[0].label_url
-        })
-          .then(() => console.log('Added shipping label to', order.id))
-      }
-    }).catch(err => console.error(err))
+    shippo
+      .getOrder(order.get('Shippo Order ID'))
+      .then(sOrder => {
+        if (sOrder.order_status == 'SHIPPED') {
+          order
+            .patchUpdate({
+              'Shipping Label': [
+                {
+                  url: sOrder.transactions[0].label_url
+                }
+              ],
+              'Shipping Label URL': sOrder.transactions[0].label_url
+            })
+            .then(() => console.log('Added shipping label to', order.id))
+        }
+      })
+      .catch(err => console.error(err))
   }
 })
 
@@ -99,13 +106,12 @@ function handleAddress(obj) {
     return
   }
 
-  shippo.createAddress(address)
-    .then(shippoAddress => {
-      return obj.patchUpdate({
-        'Shippo Address ID': shippoAddress.object_id,
-        'Address Hash': hash(address)
-      })
+  shippo.createAddress(address).then(shippoAddress => {
+    return obj.patchUpdate({
+      'Shippo Address ID': shippoAddress.object_id,
+      'Address Hash': hash(address)
     })
+  })
 }
 
 forEachInTable('Senders', sender => {
