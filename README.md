@@ -1,8 +1,27 @@
-# airbender
+# Airbender
 
 ![](https://pmcvariety.files.wordpress.com/2018/09/last-airbender.jpg)
 
 Airbender is a continually running Node bot that takes programmatic actions in our Airtable databases, like integrating our shipment database with Shippo for creating shipping labels.
+
+## Setup
+
+The standards...
+
+    $ git clone https://github.com/hackclub/airbender
+
+Create a file in the cloned repo called `.env` and fill with the following:
+
+```
+AIRTABLE_KEY=REPLACEME
+AIRTABLE_BASE=REPLACEME
+
+SHIPPO_KEY=REPLACEME
+```
+
+And then run (only works in root of repo)!
+
+    $ ./bin/airbender
 
 ## License
 
