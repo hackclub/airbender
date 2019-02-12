@@ -89,7 +89,7 @@ function handleAddress(obj) {
     zip: obj.get('ZIP Code'),
     state: obj.get('State'),
     country: countryCode,
-    phone: obj.get('Phone Number'),
+    phone: obj.get('Phone'),
     email: obj.get('Email'),
     is_residential: obj.get('Is Residential'),
     validate: true
