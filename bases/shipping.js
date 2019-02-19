@@ -1,29 +1,11 @@
-require('dotenv').config()
-
 const Airtable = require('airtable')
 const Shippo = require('../lib/shippo.js')
-const md5 = require('md5')
 
 const config = require('../config.js')
+const util = require('../util.js')
 
 const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.shipping)
 const shippo = new Shippo(config.shippoKey)
-
-function forEachInTable(tableName, cb) {
-  return base(tableName)
-    .select()
-    .eachPage((records, fetchNextPage) => {
-      records.forEach(record => {
-        cb(record)
-      })
-
-      fetchNextPage()
-    })
-}
-
-function hash(obj) {
-  return md5(JSON.stringify(obj))
-}
 
 function handleAddress(obj) {
   const country = obj.get('Country')
@@ -47,7 +29,7 @@ function handleAddress(obj) {
     validate: true
   }
 
-  if (obj.get('Address Hash') == hash(address)) {
+  if (obj.get('Address Hash') == util.hash(address)) {
     return
   }
 
@@ -55,14 +37,14 @@ function handleAddress(obj) {
     .then(shippoAddress => {
       return obj.patchUpdate({
         'Shippo Address ID': shippoAddress.object_id,
-        'Address Hash': hash(address)
+        'Address Hash': util.hash(address)
       })
     })
 }
 
 module.exports = () => {
   const processOrders = () => {
-    return forEachInTable('Shippo Orders', order => {
+    return util.forEachInTable(base, 'Shippo Orders', order => {
       if (order.get('Create Order') && !order.get('Shippo Order ID')) {
         const shipmentId = order.get('Shipment')[0]
 
@@ -109,13 +91,13 @@ module.exports = () => {
   }
 
   const processSenders = () => {
-    return forEachInTable('Senders', sender => {
+    return util.forEachInTable(base, 'Senders', sender => {
       return handleAddress(sender)
     })
   }
 
   const processRecipients = () => {
-    return forEachInTable('Recipients', recipient => {
+    return util.forEachInTable(base, 'Recipients', recipient => {
       return handleAddress(recipient)
     })
   }
