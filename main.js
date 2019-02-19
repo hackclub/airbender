@@ -1,8 +1,8 @@
-const shippingBase = require('./shippingBase.js')
+const shipping = require('./bases/shipping.js')
 
 // Entrypoint of application in ES6
 console.log(`Airbender iteration starting...`)
 
 Promise.all([
-  shippingBase()
+  shipping()
 ]).catch(err => console.error(err))

@@ -1,10 +1,10 @@
 require('dotenv').config()
 
 const Airtable = require('airtable')
-const Shippo = require('./lib/shippo.js')
+const Shippo = require('../lib/shippo.js')
 const md5 = require('md5')
 
-const config = require('./config.js')
+const config = require('../config.js')
 
 const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.shipping)
 const shippo = new Shippo(config.shippoKey)
