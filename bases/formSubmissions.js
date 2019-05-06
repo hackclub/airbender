@@ -18,15 +18,20 @@ module.exports = () => {
         const bodyRecord = body.record
 
         const destination = new Airtable({apiKey: config.airtable.apiKey}).base(bodyBase)
-        return destination.table(bodyTable).create(bodyRecord, function(err, result) {
-          if (err) { return err.message }
-          return submission.patchUpdate({
+        destination.table(bodyTable).create(bodyRecord, function(err, result) {
+          if (err) {
+            return submission.patchUpdate({
+              'Populate Fields': null,
+              'Status': err.message
+            })
+          }
+          submission.patchUpdate({
             'Table': bodyTable,
             'Base': bodyBase,
             'Populate Fields': null,
             'Status': 'Success'
           })
-        })
+       })
       } catch (e) {
         return submission.patchUpdate({
           'Populate Fields': null,
