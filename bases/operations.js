@@ -32,7 +32,10 @@ module.exports = () => {
         sentEmails.add(email)
         return sendConfirmationTo(email).then(_ => {
           console.log(`Sent confirmation to ${email}`)
-          return applicant.patchUpdate({ 'Send Confirmation': false })
+          return applicant.patchUpdate({
+            'Send Confirmation': false,
+            'Notes': 'Email confirmation sent by Zapier'
+          })
         })
       }
     }
