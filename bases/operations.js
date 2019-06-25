@@ -11,7 +11,7 @@ const sendConfirmationTo = email => (
     method: 'post',
     body: JSON.stringify({ email }),
     headers: { 'Content-Type': 'application/json' }
-  }).catch(e => console.warn(e))
+  })
 )
 
 module.exports = () => {
@@ -35,6 +35,12 @@ module.exports = () => {
           return applicant.patchUpdate({
             'Send Confirmation': false,
             'Notes': 'Email confirmation sent by Zapier'
+          })
+        }).catch(e => {
+          console.log(e.message)
+          return applicant.patchUpdate({
+            'Send Confirmation': false,
+            'Notes': `Automatic sending failed with error: ${e.message}`
           })
         })
       }
