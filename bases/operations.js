@@ -20,16 +20,19 @@ module.exports = () => {
   return util.forEachInTable(base, 'Waitlist', applicant => {
     const email = applicant.get('Email')
 
-    if (applicant.get('Send Confirmation')) {
-      if (sentEmails.has(email)) {
-        console.log(`Skipping duplicate waitlist entry for ${email}`)
+    if (sentEmails.has(email)) {
+      if (applicant.get('Send Confirmation')) {
+        console.log(`Skipping duplicate waitlist entry for ${email} & noting in Airtable`)
         return applicant.patchUpdate({
           'Send Confirmation': false,
           'Notes': 'This is a duplicate waitlist entry– email confirmation not sent'
         })
-      } else {
+      }
+    } else {
+      sentEmails.add(email)
+
+      if (applicant.get('Send Confirmation')) {
         console.log(`Sending waitlist confirmation to ${email}...`)
-        sentEmails.add(email)
         return sendConfirmationTo(email).then(_ => {
           console.log(`Sent confirmation to ${email}`)
           return applicant.patchUpdate({
