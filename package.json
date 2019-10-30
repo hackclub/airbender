@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/hackclub/airbender#readme",
   "dependencies": {
-    "airtable": "^0.5.8",
+    "airtable": "^0.7.2",
     "babel-register": "^6.26.0",
     "dotenv": "^6.2.0",
     "md5": "^2.2.1",
