@@ -23,7 +23,7 @@ async function processClubs() {
         'Club': [club.id],
         'Spending limit (cents)': card.spend_limit,
         'State': card.state,
-        'Sync with Privacy': true
+        'Sync with Privacy': true,
       })
       console.log('Created card', JSON.stringify(card))
     }
@@ -42,6 +42,14 @@ async function processCards() {
       })
       console.log('Updated card values:', privacyResponse)
       await card.patchUpdate({ 'Sync with Privacy': false })
+    }
+    if (card.get('Privacy Token') && !card.get('Embed URL')) {
+      await card.patchUpdate({
+        'Embed URL': privacy.getEmbed({
+          token: card.get('Privacy Token'),
+          css: 'https://infantileblissfulrectangles.maxwofford.repl.co/style.css'
+        })
+      })
     }
   })
 }
