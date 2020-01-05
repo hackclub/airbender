@@ -10,7 +10,7 @@ const privacy = new Privacy
 
 async function processClubs() {
   util.forEachInTable(base, 'Clubs', async club => {
-    if (club.get('Should have Privacy Card' && !club.get('Privacy Card'))) {
+    if (club.get('Should have Privacy Card' && !club.get('Privacy Card ID'))) {
       console.log('Creating card for club', club.id)
       const card = await privacy.createCard()
       const cardRecord = await base('Privacy Cards').create({
