@@ -14,14 +14,34 @@ async function processClubs() {
       console.log('Creating card for club', club.id)
       const card = await privacy.createCard({
         type: 'UNLOCKED',
-        memo: club.get('ID')
+        spend_limit: 0,
+        spend_limit_duration: 'FOREVER',
+        state: 'OPEN',
       })
       const cardRecord = await base('Privacy Cards').create({
         'Privacy Token': card.token,
         'Club': [club.id],
-        'Spending limit (cents)': 0,
+        'Spending limit (cents)': card.spend_limit,
+        'State': card.state,
+        'Sync with Privacy': true
       })
       console.log('Created card', JSON.stringify(card))
+    }
+  })
+}
+
+async function processCards() {
+  util.forEachInTable(base, 'Privacy Cards', async card => {
+    if (card.get('Sync with Privacy')) {
+      console.log('Updating Privacy with changes from ', card.get('ID'))
+      const privacyResponse = await privacy.updateCard({
+        card_token: card.get('Privacy Token'),
+        state: card.get('State'),
+        memo: card.get('Memo'),
+        spend_limit: card.get('Spending limit (cents)'),
+      })
+      console.log('Updated card values:', privacyResponse)
+      await card.patchUpdate({ 'Sync with Privacy': false })
     }
   })
 }
@@ -29,5 +49,6 @@ async function processClubs() {
 module.exports = () => (
   Promise.all([
     processClubs(),
+    processCards(),
   ])
 )
