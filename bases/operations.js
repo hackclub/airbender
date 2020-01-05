@@ -61,5 +61,6 @@ module.exports = () => (
   Promise.all([
     processClubs(),
     processCards(),
+    processGrantRequests(),
   ])
 )
