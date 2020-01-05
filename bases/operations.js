@@ -46,6 +46,17 @@ async function processCards() {
   })
 }
 
+async function processGrantRequests() {
+  util.forEachInTable(base, 'Grant Requests', async grantRequest => {
+    if (grantRequest.get('Grant Record ID') && !grantRequest.get('GitHub Grant')) {
+      console.log('Found unassociated grant', grantRequest.id, '...')
+      const grant = await base('GitHub Grants').find(grantRequest.get('Grant Record ID'))
+      console.log('Tying to grant', grant.id)
+      await grantRequest.patchUpdate({ "GitHub Grant": [grant.id] })
+    }
+  })
+}
+
 module.exports = () => (
   Promise.all([
     processClubs(),
