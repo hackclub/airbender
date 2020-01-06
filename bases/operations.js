@@ -47,7 +47,7 @@ async function processCards() {
       await card.patchUpdate({
         'Embed URL': privacy.getEmbed({
           token: card.get('Privacy Token'),
-          css: 'https://infantileblissfulrectangles.maxwofford.repl.co/style.css'
+          css: 'https://raw.githubusercontent.com/hackclub/privacy-card-embed/master/style.css'
         })
       })
     }
