@@ -10,8 +10,9 @@ const privacy = new Privacy
 
 async function processClubs() {
   util.forEachInTable(base, 'Clubs', async club => {
-    if (club.get('Should have Privacy Card') && !club.get('Privacy Card')) {
+    if (club.get('Privacy Card Limit') > 0 && !club.get('Privacy Card')) {
       console.log('Creating card for club', club.id)
+      try {
       const card = await privacy.createCard({
         type: 'UNLOCKED',
         spend_limit: 0,
@@ -21,11 +22,13 @@ async function processClubs() {
       const cardRecord = await base('Privacy Cards').create({
         'Privacy Token': card.token,
         'Club': [club.id],
-        'Spending limit (cents)': card.spend_limit,
         'State': card.state,
         'Sync with Privacy': true,
       })
       console.log('Created card', JSON.stringify(card))
+      } catch (err) {
+        console.error(err)
+      }
     }
   })
 }
@@ -38,7 +41,7 @@ async function processCards() {
         card_token: card.get('Privacy Token'),
         state: card.get('State'),
         memo: card.get('Memo'),
-        spend_limit: card.get('Spending limit (cents)'),
+        spend_limit: card.get('Spending limit') * 100, // privacy accepts this in cents
       })
       console.log('Updated card values:', privacyResponse)
       await card.patchUpdate({ 'Sync with Privacy': false })
