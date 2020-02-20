@@ -5,7 +5,8 @@ module.exports = {
       operations: process.env.AIRTABLE_OPERATIONS_BASE,
       shipping: process.env.AIRTABLE_SHIPPING_BASE,
       hardwareDonations: process.env.AIRTABLE_HARDWARE_DONATIONS_BASE,
-      formSubmissions: process.env.AIRTABLE_FORM_SUBMISSIONS_BASE
+      formSubmissions: process.env.AIRTABLE_FORM_SUBMISSIONS_BASE,
+      hackathons: process.env.AIRTABLE_HACKATHONS_BASE
     }
   },
   zapierWaitlistWebhook: process.env.ZAPIER_WAITLIST_WEBHOOK,
