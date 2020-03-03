@@ -35,13 +35,17 @@ async function processActivations() {
       recipient = `<@${recipientSlack}>`
     }
 
-    const message = await slack.chat.postMessage({
-      text: `<@UNRAW3K7F> send hack_pack_envelope ${recipient} airbender ID ${sdp.id}`,
-      channel: 'GNTFDNEF8',
-      as_user: true
-    })
+    if (recipient) {
+      const message = await slack.chat.postMessage({
+        text: `<@UNRAW3K7F> send hack_pack_envelope ${recipient} airbender ID ${sdp.id}`,
+        channel: 'GNTFDNEF8',
+        as_user: true
+      })
 
-    await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Awaiting Postmaster...' })
+      await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Awaiting Postmaster...' })
+    } else {
+      await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Failed to find recipient contact info...' })
+    }
   })
 }
 
