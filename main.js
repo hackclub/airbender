@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const stopwatch = require('./util.js').stopwatch
 const operations = require('./bases/operations.js')
 const shipping = require('./bases/shipping.js')
 const sdp = require('./bases/sdp.js')
@@ -11,10 +12,10 @@ const hackathons = require('./bases/hackathons.js')
 console.log(`Airbender iteration starting...`)
 
 Promise.all([
-  operations(),
-  shipping(),
-  hardwareDonations(),
-  formSubmissions(),
-  hackathons(),
-  sdp()
+  stopwatch('operations', operations),
+  stopwatch('shipping', shipping),
+  stopwatch('hardwareDonations', hardwareDonations),
+  stopwatch('formSubmissions', formSubmissions),
+  stopwatch('hackathons', hackathons),
+  stopwatch('sdp', sdp)
 ]).catch(err => console.error(err))

@@ -78,7 +78,7 @@ async function processMissions() {
 
 module.exports = () => (
   Promise.all([
-    // processActivations(),
+    processActivations(),
     processMissions(),
   ])
 )

@@ -29,6 +29,14 @@ function findInTable(base, tableName, formula, cb) {
     })
 }
 
+async function stopwatch(name, func) {
+  const start = Date.now()
+  const result = await func()
+  const duration = Date.now() - start
+  console.log( '...', name, 'took', duration, 'ms')
+  return result
+}
+
 function hash(obj) {
   return md5(JSON.stringify(obj))
 }
@@ -36,5 +44,6 @@ function hash(obj) {
 module.exports = {
   forEachInTable: forEachInTable,
   findInTable: findInTable,
+  stopwatch: stopwatch,
   hash: hash
 }
