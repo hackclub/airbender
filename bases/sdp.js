@@ -27,24 +27,21 @@ function lookupSlackByGithub(username) {
 
 const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.sdp)
 async function processActivations() {
-  util.forEachInTable(base, 'SDP Priority Activations', async sdp => {
-    if (sdp.get('Create mail mission') && !sdp.get('Mail Mission')) {
-      // this SDP should have a mail mission created
-
-      let recipient = sdp.get('GitHub Email')
-      const recipientSlack = await lookupSlackByGithub(sdp.get('GitHub Username'))
-      if (recipientSlack) {
-        recipient = `<@${recipientSlack}>`
-      }
-
-      const message = await slack.chat.postMessage({
-        text: `<@UNRAW3K7F> send hack_pack_envelope ${recipient} airbender ID ${sdp.id}`,
-        channel: 'GNTFDNEF8',
-        as_user: true
-      })
-
-      await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Awaiting Postmaster...' })
+  const formula = 'AND({Create mail mission}, {Mail Mission} = BLANK())'
+  util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
+    let recipient = sdp.get('GitHub Email')
+    const recipientSlack = await lookupSlackByGithub(sdp.get('GitHub Username'))
+    if (recipientSlack) {
+      recipient = `<@${recipientSlack}>`
     }
+
+    const message = await slack.chat.postMessage({
+      text: `<@UNRAW3K7F> send hack_pack_envelope ${recipient} airbender ID ${sdp.id}`,
+      channel: 'GNTFDNEF8',
+      as_user: true
+    })
+
+    await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Awaiting Postmaster...' })
   })
 }
 

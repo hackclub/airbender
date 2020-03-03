@@ -13,11 +13,28 @@ function forEachInTable(base, tableName, cb) {
     })
 }
 
+// to iterate through airtable tables once per airbender cycle.
+// for tables with race conditions or rate-limiting
+// ex. the SDP airtable takes about 10 seconds to load all the records at once
+function findInTable(base, tableName, formula, cb) {
+  return base(tableName)
+    .select({
+      maxRecords: 1,
+      filterByFormula: formula
+    })
+    .firstPage((err, records) => {
+      if (records[0]) {
+        cb(records[0])
+      }
+    })
+}
+
 function hash(obj) {
   return md5(JSON.stringify(obj))
 }
 
 module.exports = {
   forEachInTable: forEachInTable,
+  findInTable: findInTable,
   hash: hash
 }
