@@ -4,13 +4,15 @@ const slack = require('../lib/slack.js')
 const config = require('../config.js')
 const util = require('../util.js')
 
+const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.sdp)
+const opsBase = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.operations)
+
 function lookupSlackByGithub(username) {
   return new Promise((resolve, reject) => {
     if (!username) {
       resolve(null)
     }
 
-    const opsBase = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.operations)
     opsBase('People').select({
       maxRecords: 1,
       filterByFormula: `{GitHub URL} = 'https://github.com/${username}'`
@@ -25,7 +27,22 @@ function lookupSlackByGithub(username) {
   })
 }
 
-const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.sdp)
+function findMissionBySDP(id) {
+  return new Promise((resolve, reject) => {
+    opsBase('Mail Missions').select({
+      maxRecords: 1,
+      filterByFormula: `FIND("${id}", Notes) >= 1`
+    }).firstPage((err, records) => {
+      if (err) reject(err)
+      if (records && records[0]) {
+        const mission = records[0].get('Mission Thread Link')
+        resolve(mission)
+      }
+      resolve(null)
+    })
+  })
+}
+
 async function processActivations() {
   const formula = 'AND({Create mail mission}, {Mail Mission} = BLANK())'
   util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
@@ -49,8 +66,19 @@ async function processActivations() {
   })
 }
 
+async function processMissions() {
+  const formula = "{Mail Mission} = 'Awaiting Postmaster...'"
+  util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
+    const mission = await findMissionBySDP(sdp.id)
+    if (mission) {
+      await sdp.patchUpdate({ 'Mail Mission': mission })
+    }
+  })
+}
+
 module.exports = () => (
   Promise.all([
-    processActivations(),
+    // processActivations(),
+    processMissions(),
   ])
 )
