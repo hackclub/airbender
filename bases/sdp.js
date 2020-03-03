@@ -18,7 +18,6 @@ function lookupSlackByGithub(username) {
       if (err) reject(err)
       if (records && records[0]) {
         const slackID = records[0].get('Slack ID')
-        console.log('Found Slack ID for GitHub account', username, slackID)
         resolve(slackID)
       }
       resolve(null)
@@ -45,7 +44,6 @@ async function processActivations() {
       })
 
       await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Awaiting Postmaster...' })
-      console.log('patched')
     }
   })
 }
