@@ -39,7 +39,7 @@ async function processActivations() {
       }
 
       const message = await slack.chat.postMessage({
-        text: `<@UNRAW3K7F> test hack_pack_envelope ${recipient} airbender ID ${sdp.id}`,
+        text: `<@UNRAW3K7F> send hack_pack_envelope ${recipient} airbender ID ${sdp.id}`,
         channel: 'GNTFDNEF8',
         as_user: true
       })
