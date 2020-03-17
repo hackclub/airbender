@@ -80,7 +80,7 @@ async function processAddresses() {
     if (address) {
       try {
         const result = await geocode(address.fields['Formatted Address'])
-        const location = (result.geometry || {}).location
+        const location = ((result || {}).geometry || {}).location || {}
 
         await address.patchUpdate({
           'Attempted to Geocode': true,
