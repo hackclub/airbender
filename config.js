@@ -12,5 +12,6 @@ module.exports = {
   },
   zapierWaitlistWebhook: process.env.ZAPIER_WAITLIST_WEBHOOK,
   shippoKey: process.env.SHIPPO_KEY,
-  slackLegacyToken: process.env.SLACK_LEGACY_TOKEN
+  slackLegacyToken: process.env.SLACK_LEGACY_TOKEN,
+  googleApiKey: process.env.GOOGLE_API_KEY
 }
