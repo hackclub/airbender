@@ -4,7 +4,7 @@ const fetch = require('node-fetch')
 const config = require('../config.js')
 const util = require('../util.js')
 const Privacy = require('../lib/privacy')
-const geocoder = require('../lib/geocode')
+const geocode = require('../lib/geocode')
 
 const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable.bases.operations)
 const privacy = new Privacy
@@ -79,22 +79,13 @@ async function processAddresses() {
     const address = records[0]
     if (address) {
       try {
-        const results = await geocoder.geocode({
-          postalcode: address.get('Postal Code'),
-          state: address.get('State/Province'),
-          city: address.get('City'),
-          street: [
-            address.get('Street (First Line)'),
-            address.get('Street (Second Line)'),
-            address.get('Street (Third Line)')
-          ].join(' ')
-        })
-        const formattedAddress = results[0] || {}
+        const result = await geocode(address.fields['Formatted Address'])
+        const location = (result.geometry || {}).location
 
         await address.patchUpdate({
           'Attempted to Geocode': true,
-          'Latitude': String(formattedAddress.latitude || ''),
-          'Longitude': String(formattedAddress.longitude || '')
+          'Latitude': String(location.latitude || ''),
+          'Longitude': String(location.longitude || '')
         })
 
       } catch(err) {
@@ -106,7 +97,6 @@ async function processAddresses() {
 
 module.exports = () => (
   Promise.all([
-    processClubs(),
     processCards(),
     processGrantRequests(),
     // processAddresses(),
