@@ -109,6 +109,6 @@ module.exports = () => (
     processClubs(),
     processCards(),
     processGrantRequests(),
-    processAddresses(),
+    // processAddresses(),
   ])
 )
