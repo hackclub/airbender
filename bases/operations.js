@@ -72,26 +72,20 @@ async function processGrantRequests() {
 
 async function processAddresses() {
   // Open street map has a rate-limit of 1 req/sec that they *DO* enforce
-  base('Addresses').select({
-    maxRecords: 1,
-    filterByFormula: '{Attempted to Geocode} = 0'
-  }).firstPage(async (err, records) => {
-    if (err) throw err
-    const address = records[0]
-    if (address) {
-      try {
-        const result = await geocode(address.fields['Formatted Address'])
-        const location = ((result || {}).geometry || {}).location || {}
+  const formula = '{Attempted to Geocode} = 0'
+  util.findInTable(base, 'Addresses', formula, async address => {
+    try {
+      const result = await geocode(address.fields['Formatted Address'])
+      const location = ((result || {}).geometry || {}).location || {}
 
-        await address.patchUpdate({
-          'Attempted to Geocode': true,
-          'Latitude': String(location.latitude || ''),
-          'Longitude': String(location.longitude || '')
-        })
+      await address.patchUpdate({
+        'Attempted to Geocode': true,
+        'Latitude': String(location.latitude || ''),
+        'Longitude': String(location.longitude || '')
+      })
 
-      } catch(err) {
-        console.log(err)
-      }
+    } catch(err) {
+      console.log(err)
     }
   })
 }
