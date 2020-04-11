@@ -1,6 +1,7 @@
 const Airtable = require('airtable')
 const fetch = require('node-fetch')
 
+const slack = require('../lib/slack.js')
 const config = require('../config.js')
 const util = require('../util.js')
 const Privacy = require('../lib/privacy')
@@ -95,10 +96,25 @@ async function processAddresses() {
   })
 }
 
+async function processMailMissions() {
+  const formula = 'AND({Paid GP} = 0, {Status} = "6 Delivered", {Test} = 0)'
+  util.findInTable(base, 'Mail Missions', formula, async mission => {
+    const message = slack.chat.postMessage({
+      text: `<@UH50T81A6> give ${mission.fields['Sender Message Tag']} ${mission.fields['GP Value']}gp for shipping a package`,
+      channel: 'GNTFDNEF8',
+      thread_ts: mission.fields['Mail Team Thread Timestamp'],
+      as_user: true
+    })
+    await mission.patchUpdate({ 'Paid GP': true })
+  })
+}
+
 module.exports = () => (
   Promise.all([
+    processClubs(),
     processCards(),
     processGrantRequests(),
-    // processAddresses(),
+    processAddresses(),
+    processMailMissions(),
   ])
 )
