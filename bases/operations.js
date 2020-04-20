@@ -70,24 +70,45 @@ async function processGrantRequests() {
   })
 }
 
+function airtableGeocodeToJSON(airtableGeocode) {
+  let replaced = airtableGeocode.replace('🔵 ', '')
+  return JSON.parse(Buffer.from(replaced, 'base64').toString())
+}
+
 async function processAddresses() {
-  // Open street map has a rate-limit of 1 req/sec that they *DO* enforce
-  const formula = '{Attempted to Geocode} = 0'
-  util.findInTable(base, 'Addresses', formula, async address => {
-    try {
-      const result = await geocode(address.fields['Formatted Address'])
-      const location = ((result || {}).geometry || {}).location || {}
+  return Promise.all([
+    // Open street map has a rate-limit of 1 req/sec that they *DO* enforce
+    util.findInTable(base, 'Addresses', '{Attempted to Geocode} = 0', async address => {
+      try {
+        const result = await geocode(address.fields['Formatted Address'])
+        const location = ((result || {}).geometry || {}).location || {}
 
-      await address.patchUpdate({
-        'Attempted to Geocode': true,
-        'Latitude': String(location.latitude || ''),
-        'Longitude': String(location.longitude || '')
-      })
+        await address.patchUpdate({
+          'Attempted to Geocode': true,
+          'Latitude': String(location.latitude || ''),
+          'Longitude': String(location.longitude || '')
+        })
 
-    } catch(err) {
-      console.log(err)
-    }
-  })
+      } catch(err) {
+        console.log(err)
+      }
+    }),
+    util.findInTable(base, 'Addresses', 'AND(FIND("🔵",{Geocode}) >= 1, {Latitude} = BLANK(), {Longitude} = BLANK())', async address => {
+      let geocoded = address.get('Geocode')
+      console.log('geocoding', address.get('ID'))
+      let json = airtableGeocodeToJSON(geocoded)
+
+      let {lat, lng} = json.o
+      console.log('lat long', lat, lng)
+      if (lat && lng) {
+        address.patchUpdate({
+          'Latitude': lat.toString(),
+          'Longitude': lng.toString(),
+          'Attempted to Geocode': true,
+        })
+      }
+    })
+  ])
 }
 
 async function processMailMissions() {
