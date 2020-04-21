@@ -16,6 +16,6 @@ Promise.all([
   stopwatch('shipping', shipping),
   stopwatch('hardwareDonations', hardwareDonations),
   stopwatch('formSubmissions', formSubmissions),
-  // stopwatch('hackathons', hackathons),
   stopwatch('sdp', sdp)
+  stopwatch('hackathons', hackathons),
 ]).catch(err => console.error(err))

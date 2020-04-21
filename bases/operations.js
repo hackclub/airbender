@@ -71,7 +71,7 @@ async function processGrantRequests() {
 }
 
 function airtableGeocodeToJSON(airtableGeocode) {
-  let replaced = airtableGeocode.replace('🔵 ', '')
+  const replaced = airtableGeocode.replace('🔵 ', '')
   return JSON.parse(Buffer.from(replaced, 'base64').toString())
 }
 
@@ -93,7 +93,11 @@ async function processAddresses() {
         console.log(err)
       }
     }),
-    util.findInTable(base, 'Addresses', 'AND(FIND("🔵",{Geocode}) >= 1, {Latitude} = BLANK(), {Longitude} = BLANK())', async address => {
+    util.forEachInFilter(base, 'addresses', [
+      'FIND("🔵",{Geocode}) >= 1',
+      'Latitude = BLANK()',
+      'Longitude = BLANK()'
+    ], async address => {
       let geocoded = address.get('Geocode')
       console.log('geocoding', address.get('ID'))
       let json = airtableGeocodeToJSON(geocoded)
@@ -101,7 +105,7 @@ async function processAddresses() {
       let {lat, lng} = json.o
       console.log('lat long', lat, lng)
       if (lat && lng) {
-        address.patchUpdate({
+        await address.patchUpdate({
           'Latitude': lat.toString(),
           'Longitude': lng.toString(),
           'Attempted to Geocode': true,
@@ -113,6 +117,7 @@ async function processAddresses() {
 
 async function processMailMissions() {
   const formula = 'AND({Paid GP} = 0, {Status} = "6 Delivered", {Test} = 0)'
+  // this is rate-limited using findInTable because postmaster *will break* if you send too many missions at once
   util.findInTable(base, 'Mail Missions', formula, async mission => {
     const message = slack.chat.postMessage({
       text: `<@UH50T81A6> give ${mission.fields['Sender Message Tag']} ${mission.fields['GP Value']}gp for shipping a package`,
@@ -126,10 +131,10 @@ async function processMailMissions() {
 
 module.exports = () => (
   Promise.all([
-    processClubs(),
-    processCards(),
-    processGrantRequests(),
+    // processClubs(),
+    // processCards(),
+    // processGrantRequests(),
     processAddresses(),
-    processMailMissions(),
+    // processMailMissions(),
   ])
 )

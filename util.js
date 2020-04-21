@@ -13,6 +13,22 @@ function forEachInTable(base, tableName, cb) {
     })
 }
 
+// more performative forEachInTable
+function forEachInFilter(base, tableName, formula, cb) {
+  const selectOptions = {
+    filterByFormula: formula
+  }
+  if (Array.isArray(formula)) {
+    selectOptions.filterByFormula = `AND(${formula.join(',')})`
+  }
+  return base(tableName)
+    .select(selectOptions)
+    .eachPage(async (records, fetchNextPage) => {
+      records.forEach(cb)
+      fetchNextPage()
+    })
+}
+
 // to iterate through airtable tables once per airbender cycle.
 // for tables with race conditions or rate-limiting
 // ex. the SDP airtable takes about 10 seconds to load all the records at once
@@ -43,6 +59,7 @@ function hash(obj) {
 
 module.exports = {
   forEachInTable: forEachInTable,
+  forEachInFilter: forEachInFilter,
   findInTable: findInTable,
   stopwatch: stopwatch,
   hash: hash
