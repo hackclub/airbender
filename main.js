@@ -7,6 +7,7 @@ const sdp = require('./bases/sdp.js')
 const hardwareDonations = require('./bases/hardwareDonations.js')
 const formSubmissions = require('./bases/formSubmissions.js')
 const hackathons = require('./bases/hackathons.js')
+const bankApplications = require('./bases/bankApplications.js')
 
 // Entrypoint of application in ES6
 console.log(`Airbender iteration starting...`)
@@ -17,5 +18,6 @@ Promise.all([
   stopwatch('hardwareDonations', hardwareDonations),
   stopwatch('formSubmissions', formSubmissions),
   stopwatch('hackathons', hackathons),
-  stopwatch('sdp', sdp)
+  stopwatch('sdp', sdp),
+  stopwatch('bankApplications', bankApplications)
 ]).catch(err => console.error(err))
