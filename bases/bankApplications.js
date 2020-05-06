@@ -8,7 +8,7 @@ const base = new Airtable({apiKey: config.airtable.apiKey}).base(config.airtable
 const hcb = new HCB()
 
 async function processAccountCreations() {
-  const formula = 'AND({HCB account URL}=BLANK(),{Should generate HCB account?}=1)'
+  const formula = '{HCB account URL}=BLANK()'
   util.forEachInFilter(base, 'Events', formula, async eventRecord => {
     await eventRecord.patchUpdate({ 'HCB account URL': 'Awaiting response from bank...' })
     
