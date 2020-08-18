@@ -27,6 +27,26 @@ function lookupSlackByGithub(username) {
   })
 }
 
+function lookupSlackByEmail(email) {
+  return new Promise((resolve, reject) => {
+    if (!email) {
+      resolve(null)
+    }
+
+    opsBase('People').select({
+      maxRecords: 1,
+      filterByFormula: `{Email} = '${email}'`
+    }).firstPage((err, records) => {
+      if (err) reject(err)
+      if (records && records[0]) {
+        const slackID = records[0].get('Slack ID')
+        resolve(slackID)
+      }
+      resolve(null)
+    })
+  })
+}
+
 function findMissionBySDP(id) {
   return new Promise((resolve, reject) => {
     opsBase('Mail Missions').select({
@@ -47,7 +67,7 @@ async function processActivations() {
   const formula = 'AND({Create mail mission}, {Mail Mission} = BLANK())'
   util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
     let recipient = sdp.get('GitHub Email')
-    const recipientSlack = await lookupSlackByGithub(sdp.get('GitHub Username'))
+    const recipientSlack = await lookupSlackByGithub(sdp.get('GitHub Username')) || await lookupSlackByEmail('GitHub Email')
     if (recipientSlack) {
       recipient = `<@${recipientSlack}>`
     }
