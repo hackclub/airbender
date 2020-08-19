@@ -48,6 +48,7 @@ function lookupSlackByEmail(email) {
 }
 
 function findMissionBySDP(id) {
+  console.log('Finding mission with SDP record', id)
   return new Promise((resolve, reject) => {
     opsBase('Mail Missions').select({
       maxRecords: 1,

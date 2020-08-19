@@ -4,6 +4,7 @@ module.exports = {
     bases: {
       operations: process.env.AIRTABLE_OPERATIONS_BASE,
       sdp: process.env.AIRTABLE_SDP_BASE,
+      som: process.env.AIRTABLE_SOM_BASE,
       shipping: process.env.AIRTABLE_SHIPPING_BASE,
       hardwareDonations: process.env.AIRTABLE_HARDWARE_DONATIONS_BASE,
       formSubmissions: process.env.AIRTABLE_FORM_SUBMISSIONS_BASE,
