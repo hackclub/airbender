@@ -89,7 +89,7 @@ async function processActivations() {
 
 async function processMissions() {
   const formula = "{Mail Mission} = 'Awaiting Postmaster...'"
-  util.forEachInFilter(base, 'SDP Priority Activations', formula, async sdp => {
+  util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
     const mission = await findMissionBySDP(sdp.id)
     if (mission) {
       await sdp.patchUpdate({ 'Mail Mission': mission })

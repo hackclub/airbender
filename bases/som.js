@@ -38,7 +38,7 @@ async function processRequests() {
 
 async function processMissions() {
   const formula = "{Mail Mission} = 'Awaiting Postmaster...'"
-  util.forEachInFilter(base, 'Sticker Requests', formula, async som => {
+  util.findInTable(base, 'Sticker Requests', formula, async som => {
     const mission = await findMissionByRequest(som.id)
     if (mission) {
       await som.patchUpdate({ 'Mail Mission': mission })
