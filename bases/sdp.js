@@ -27,6 +27,21 @@ function lookupSlackByGithub(username) {
   })
 }
 
+function findDupes(githubUsername) {
+  return new Promise((resolve, reject) => {
+    base('SDP Priority Activations').select({
+      maxRecords: 1,
+      filterByFormula: `AND(NOT({Mail Mission}=BLANK()),{GitHub Username}="${githubUsername}")`
+    }).firstPage((err, records) => {
+      if (err) reject(err)
+      if (records && records[0]) {
+        resolve(records[0])
+      }
+      resolve(null)
+    })
+  })
+}
+
 function lookupSlackByEmail(email) {
   return new Promise((resolve, reject) => {
     if (!email) {
@@ -67,6 +82,10 @@ function findMissionBySDP(id) {
 async function processActivations() {
   const formula = 'AND({Create mail mission}, {Mail Mission} = BLANK())'
   util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
+    if (await findDupes()) {
+      await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Skipping: user already has mail mission' })
+      return
+    }
     let recipient = sdp.get('GitHub Email')
     const recipientSlack = await lookupSlackByGithub(sdp.get('GitHub Username')) || await lookupSlackByEmail('GitHub Email')
     if (recipientSlack) {
