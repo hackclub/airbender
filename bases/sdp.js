@@ -82,7 +82,8 @@ function findMissionBySDP(id) {
 async function processActivations() {
   const formula = 'AND({Create mail mission}, {Mail Mission} = BLANK())'
   util.findInTable(base, 'SDP Priority Activations', formula, async sdp => {
-    if (await findDupes()) {
+
+    if (await findDupes(sdp.get('GitHub Username'))) {
       await sdp.patchUpdate({ 'Create mail mission': false, 'Mail Mission': 'Skipping: user already has mail mission' })
       return
     }
