@@ -23,5 +23,5 @@ Promise.all([
   stopwatch('sdp', sdp),
   stopwatch('gch', gch),
   stopwatch('som', som),
-  stopwatch('bankApplications', bankApplications)
+  //stopwatch('bankApplications', bankApplications)
 ]).catch(err => console.error(err))
