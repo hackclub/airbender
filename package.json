@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/hackclub/airbender#readme",
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^2.3.1",
-    "@slack/web-api": "^5.7.0",
+    "@googlemaps/google-maps-services-js": "^3.3.29",
+    "@slack/web-api": "^5.15.0",
     "airtable": "^0.7.2",
     "babel-register": "^6.26.0",
     "crypto-js": "^3.1.9-1",
