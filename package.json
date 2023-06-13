@@ -21,7 +21,7 @@
     "@slack/web-api": "^5.7.0",
     "airtable": "^0.7.2",
     "babel-register": "^6.26.0",
-    "crypto-js": "^3.1.9-1",
+    "crypto-js": "^3.2.1",
     "dotenv": "^6.2.0",
     "md5": "^2.2.1",
     "node-fetch": "^2.3.0"
